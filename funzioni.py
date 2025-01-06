@@ -22,7 +22,3 @@ def get_turni_delle_pulizie(hostname, port):
 
     return turni.json()
     
-
-
-#print(compute_urls("raffosberry"))
-print(get_turni_delle_pulizie("workbanch", 8145))
