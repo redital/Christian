@@ -1,0 +1,10 @@
+services:
+  christian:
+    container_name: christian
+    build: .
+    environment:
+      - SERVICE_PORT=${SERVICE_PORT:-5000}
+      - API_TOKEN=${API_TOKEN:-placeholder}
+    ports:
+      - "8821:${SERVICE_PORT}"
+    pull_policy: build
