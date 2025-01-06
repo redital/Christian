@@ -33,7 +33,7 @@ Oppure dal web in sola visualizzazione al seguente link:
    )
 
 
-@bot.message_handler(commands=['canna'])
+@bot.message_handler(commands=['turni'])
 def get_turni_delle_pulizie(message):
    turni = funzioni.get_turni_delle_pulizie(TURNI_HOSTNAME,TURNI_PORT)
    for i in turni:
