@@ -1,7 +1,6 @@
 services:
   christian:
     container_name: christian
-    build: .
     environment:
       - SERVICE_PORT=${SERVICE_PORT:-5000}
       - API_TOKEN=${API_TOKEN:-placeholder}
@@ -11,4 +10,6 @@ services:
       - SUBSCRIBERS_FILE=${SUBSCRIBERS_FILE:-placeholder}
     ports:
       - "8759:${SERVICE_PORT}"
+    restart: unless-stopped
+    build: .
     pull_policy: build
