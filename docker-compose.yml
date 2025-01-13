@@ -2,6 +2,8 @@ services:
   christian:
     container_name: christian
     environment:
+      - PYTHONUNBUFFERED=1
+
       - SERVICE_PORT=${SERVICE_PORT:-5000}
       - API_TOKEN=${API_TOKEN:-placeholder}
       - DASHBOARD_HOSTNAME=${DASHBOARD_HOSTNAME:-placeholder}
