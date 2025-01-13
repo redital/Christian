@@ -1,8 +1,9 @@
 import requests
 import json
+from config import * 
 
-api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb25nX3Rva2VuIjp0cnVlLCJpZCI6ImMzMzhkM2YxLTBlNjUtNGYzZS1hNDUyLTMyN2JkYzhmZGZkNSIsIm5hbWUiOiJHaWFsbG9aYWZmZXJhbm9TY3JhcGVyIiwiaW50ZWdyYXRpb25faWQiOiJnZW5lcmljIiwiZXhwIjoxODk0MjAxOTA4fQ.zEQjUJof1j3GwhqFZ39KiYKRmail3NPg9uqK_k7PHRo"
-mealie_url = "http://192.168.1.26:9925"
+api_token = MEALIE_TOKEN
+mealie_url = "http://{}.local:{}".format(MEALIE_HOSTNAME,MEALIE_PORT)
 base_url = "/api/groups/shopping/lists"
 
 shopping_lists = {}
