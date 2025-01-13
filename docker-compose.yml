@@ -9,6 +9,9 @@ services:
       - DASHBOARD_HOSTNAME=${DASHBOARD_HOSTNAME:-placeholder}
       - TURNI_HOSTNAME=${TURNI_HOSTNAME:-placeholder}
       - TURNI_PORT=${TURNI_PORT:-5000}
+      - MEALIE_HOSTNAME=${MEALIE_HOSTNAME:-placeholder}
+      - MEALIE_PORT=${MEALIE_PORT:-5000}
+      - MEALIE_TOKEN=${MEALIE_TOKEN:-placeholder}
       - SUBSCRIBERS_FILE=${SUBSCRIBERS_FILE:-placeholder}
     ports:
       - "8759:${SERVICE_PORT}"
