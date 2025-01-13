@@ -134,7 +134,6 @@ def gen_empty_list_selection_markup(list_list):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     bot.edit_message_reply_markup(call.message.chat.id,call.message.message_id,None)
-    print(call.data)
     if "svuota lista della spesa si " in call.data :
         funzioni.empty_list(MEALIE_HOSTNAME, MEALIE_PORT,call.data.replace("svuota lista della spesa si ",""))
         bot.send_message(call.message.chat.id, "Lista svuotata")
@@ -160,7 +159,7 @@ def selezione_get_lista_della_spesa(message):
 def get_lista_della_spesa(chat_id,nome_lista):
     msg = funzioni.genera_messaggio_lista_della_spesa(MEALIE_HOSTNAME, MEALIE_PORT,nome_lista)
     bot.send_message(chat_id,msg)
-    schedule.every().hour.do(domanda_empty_list,chat_id=chat_id,nome_lista = nome_lista)
+    schedule.every(15).seconds.do(domanda_empty_list,chat_id=chat_id,nome_lista = nome_lista)
 
 @bot.message_handler(commands=['svuota_lista_della_spesa'])
 def selezione_empty_lista_della_spesa(message):
@@ -199,4 +198,4 @@ if __name__ == "__main__":
     # Avvia lo scheduler in un thread separato
     Thread(target=scheduler_loop).start()
     # Avvia il polling del bot
-    bot.infinity_polling(restart_on_change=True)
+    bot.infinity_polling()
