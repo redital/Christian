@@ -159,7 +159,7 @@ def selezione_get_lista_della_spesa(message):
 def get_lista_della_spesa(chat_id,nome_lista):
     msg = funzioni.genera_messaggio_lista_della_spesa(MEALIE_HOSTNAME, MEALIE_PORT,nome_lista)
     bot.send_message(chat_id,msg)
-    schedule.every(15).seconds.do(domanda_empty_list,chat_id=chat_id,nome_lista = nome_lista)
+    schedule.every().hour.do(domanda_empty_list,chat_id=chat_id,nome_lista = nome_lista)
 
 @bot.message_handler(commands=['svuota_lista_della_spesa'])
 def selezione_empty_lista_della_spesa(message):
