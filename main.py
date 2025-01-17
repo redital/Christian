@@ -174,7 +174,7 @@ def empty_lista_della_spesa_question(message,nome_lista):
 #================================================================================================================================================
 
 
-@bot.message_handler(commands=['turni'])
+@bot.message_handler(commands=['stato_lavatrice'])
 def get_stato_lavatrice(message):
     msg = funzioni.genera_messaggio_lavatrice(HOME_ASSISTANT_HOSTNAME, HOME_ASSISTANT_PORT)
     bot.send_message(
