@@ -1,7 +1,7 @@
 from requests import get
 import shopping_list
 import socket
-import shopping_list
+import home_assisstant
 
 def get_local_ip(hostname):
     ips=[i[4][0] for i in socket.getaddrinfo(hostname, None) if i[0] == 2]
@@ -20,7 +20,7 @@ def compute_urls(hostname):
     return res
 
 def get_service_url(hostname, port):
-    return"http://{}:{}".format(get_local_ip(hostname),port)
+    return "http://{}:{}".format(get_local_ip(hostname),port)
 
 def get_turni_delle_pulizie(hostname, port):
     turni_url = get_service_url(hostname,port)
@@ -67,3 +67,8 @@ def empty_list(hostname, port, nome_lista):
 
 
 
+def genera_messaggio_lavatrice(hostname, port):
+    ha_url = get_service_url(hostname, port)
+    stato = home_assisstant.get_stato_lavatrice(url=ha_url)
+    msg = "Ciao, sono Christian la lavatrice e il mio stato in questo momento è: {}".format(home_assisstant.stati[stato])
+    return msg    
