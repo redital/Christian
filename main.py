@@ -274,7 +274,7 @@ def callback_query(call):
     elif "lavatrice non svuotata" in call.data :
         lavatrice_non_svuotata(call.message)
     elif "lavatrice rompimi il cazzo" in call.data :
-        schedule.every(5).seconds.do(domanda_lavatrice,chat_id=call.message.chat.id).tag("lavatrice",call.message.chat.id)
+        schedule.every(15).minutes.do(domanda_lavatrice,chat_id=call.message.chat.id).tag("lavatrice",call.message.chat.id)
 
         
 
