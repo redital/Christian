@@ -31,12 +31,16 @@ def start_command(message):
        message.chat.id,
        """
 I comandi sono:
-/get_urls
-/turni
-/iscriviti
-/disiscriviti
-/lista_della_spesa
-/svuota_lista_della_spesa
+    /start - start bot
+    /help - info sul bot
+    /get_urls - recupera url per la dashboard
+    /turni - mostra i turni della settimana
+    /iscriviti - iscrive la chat al servizio di notifica settimanale per i turni delle pulizie
+    /disiscriviti - disiscrive la chat al servizio di notifica settimanale per i turni delle pulizie
+    /lista_della_spesa - mostra una lista della spesa
+    /svuota_lista_della_spesa - svuota una lista della spesa
+    /stato_lavatrice - visualizza lo stato attuale della lavatrice
+    /reminder_lavatrice - se la lavatrice è in funzione ti notificherà quando il ciclo sarà completato
        """
    )
 
