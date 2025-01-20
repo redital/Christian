@@ -65,7 +65,9 @@ def empty_list(hostname, port, nome_lista):
     shopping_list.empty_list(item_id=id_lista,api_url=mealie_url)
     return
 
-
+def get_stato_lavatrice (hostname, port):
+    ha_url = get_service_url(hostname, port)
+    return home_assisstant.get_stato_lavatrice(url=ha_url)
 
 def genera_messaggio_lavatrice(hostname, port):
     ha_url = get_service_url(hostname, port)

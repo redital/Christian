@@ -17,4 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE ${SERVICE_PORT}
 
 # Avvia l'app Flask
-CMD ["python", "main.py"]
+#CMD ["python", "main.py"]
+
+# Rendi eseguibile lo script
+RUN chmod +x /path/to/start.sh
+
+# Comando per eseguire lo script di avvio
+CMD ["run.sh"]

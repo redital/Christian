@@ -42,23 +42,3 @@ def get_servizi(url = ha_url, HOME_ASSISTANT_TOKEN = HOME_ASSISTANT_TOKEN):
     response = requests.get("{}{}services".format(url,base_url), headers=get_headers(HOME_ASSISTANT_TOKEN))
     return response.json()
 
-
-#import json
-#
-#
-#for i in get_servizi()[:2]: print(i, "\n")
-#headers = {
-#        "content-type": "application/json",
-#    }
-#FATTONIO_HOME_ASSISTANT_TOKEN = "5031396781:AAEvVhRM84Lds_ShrSVWj76WjRPx_gLPPIk"
-#REDITAL_ID = "195387485"
-#data = {
-#        "chat_id": REDITAL_ID,
-#        "text": "NO WAY"
-#}
-#resp = requests.post(url="https://api.telegram.org/bot{}/sendMessage".format(FATTONIO_HOME_ASSISTANT_TOKEN),headers=headers, data=json.dumps(data))
-#print(resp)
-#print(resp.text)
-#print(resp.request.body)
-
-

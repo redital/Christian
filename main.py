@@ -4,6 +4,7 @@ from config import *
 
 import schedule
 import subscribers
+import subscriber_lavatrice
 import time
 from threading import Thread
 
@@ -77,6 +78,7 @@ def get_turni_delle_pulizie(message):
 
 @bot.message_handler(commands=['iscriviti'])
 def iscriviti(message):
+    subscribers.user_chat_ids = subscribers.load_subscribers()
     if message.chat.id not in subscribers.user_chat_ids:
         subscribers.user_chat_ids.append(message.chat.id)
         subscribers.save_subscribers(subscribers.user_chat_ids)
@@ -86,6 +88,7 @@ def iscriviti(message):
 
 @bot.message_handler(commands=['disiscriviti'])
 def disiscriviti(message):
+    subscribers.user_chat_ids = subscribers.load_subscribers()
     if message.chat.id in subscribers.user_chat_ids:
         subscribers.user_chat_ids.remove(message.chat.id)
         subscribers.save_subscribers(subscribers.user_chat_ids)
@@ -97,6 +100,7 @@ def disiscriviti(message):
 # Funzione per inviare il messaggio schedulato
 def send_scheduled_turni():
     msg = funzioni.genera_messaggio_turni()
+    subscribers.user_chat_ids = subscribers.load_subscribers()
     for chat_id in subscribers.user_chat_ids:
         bot.send_message(chat_id, msg)
 
@@ -131,19 +135,6 @@ def gen_empty_list_selection_markup(list_list):
     markup.add(*pulsanti)
     return markup
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback_query(call):
-    bot.edit_message_reply_markup(call.message.chat.id,call.message.message_id,None)
-    if "svuota lista della spesa si " in call.data :
-        funzioni.empty_list(MEALIE_HOSTNAME, MEALIE_PORT,call.data.replace("svuota lista della spesa si ",""))
-        bot.send_message(call.message.chat.id, "Lista svuotata")
-    elif call.data == "svuota lista della spesa no":
-        bot.send_message(call.message.chat.id, "Ok, non faccio nulla")
-    elif "lista da visualizzare " in call.data :
-        get_lista_della_spesa(call.message.chat.id, call.data.replace("lista da visualizzare : ",""))
-    elif "lista da svuotare " in call.data :
-        empty_lista_della_spesa_question(call.message, call.data.replace("lista da svuotare : ",""))
-
 def domanda_empty_list(chat_id, nome_lista):
     bot.send_message(
         chat_id,
@@ -177,10 +168,64 @@ def empty_lista_della_spesa_question(message,nome_lista):
 @bot.message_handler(commands=['stato_lavatrice'])
 def get_stato_lavatrice(message):
     msg = funzioni.genera_messaggio_lavatrice(HOME_ASSISTANT_HOSTNAME, HOME_ASSISTANT_PORT)
-    bot.send_message(
-        message.chat.id,
-        msg
-    )
+    bot.send_message(message.chat.id,msg)
+
+def gen_lavatrice_svuotata_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 2
+    markup.add(
+        InlineKeyboardButton("Sì", callback_data="lavatrice svuotata"),
+        InlineKeyboardButton("No", callback_data="lavatrice non svuotata")
+        )
+    return markup
+
+def gen_rompimi_il_cazzo_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    markup.add(
+        InlineKeyboardButton("Rompimi il cazzo", callback_data="lavatrice rompimi il cazzo"),
+        )
+    return markup
+
+@bot.message_handler(commands=['reminder_lavatrice'])
+def ricordami_di_scaricare_la_lavatrice(message):
+    if funzioni.get_stato_lavatrice(HOME_ASSISTANT_HOSTNAME, HOME_ASSISTANT_PORT) == "0":
+        bot.send_message(message.chat.id,"Vedi che la lavatrice non è in funzione")
+        return
+    subscriber_lavatrice.user_chat_ids = subscriber_lavatrice.load_subscribers()
+    if message.chat.id in subscriber_lavatrice.user_chat_ids:
+        bot.send_message(message.chat.id,"Sei già iscritto a questa notifica")
+    else:
+        subscriber_lavatrice.user_chat_ids.append(message.chat.id)
+        subscriber_lavatrice.save_subscribers(subscriber_lavatrice.user_chat_ids)
+        bot.send_message(message.chat.id,"Va bene, ti ricorderò di scaricare la lavatrice")
+
+
+def notifica_lavatrice_finita():
+    subscriber_lavatrice.user_chat_ids = subscriber_lavatrice.load_subscribers()
+    for i in subscriber_lavatrice.user_chat_ids:
+        bot.send_message(i,"Oh guarda che la lavatrice è finita")
+        bot.send_message(i,"Vanno tolti presto i panni altrimenti puzzano",reply_markup=gen_rompimi_il_cazzo_markup())
+
+
+def lavatrice_svuotata(message):
+    subscriber_lavatrice.user_chat_ids = subscriber_lavatrice.load_subscribers()
+    bot.send_message(message.chat.id,"Bravo ragazzo")
+    schedule.clear("lavatrice")
+    subscriber_lavatrice.user_chat_ids.remove(message.chat.id)
+    for i in subscriber_lavatrice.user_chat_ids:
+        bot.send_message(i,"La lavatrice è stata svuotata")
+    subscriber_lavatrice.user_chat_ids = []
+    subscriber_lavatrice.save_subscribers(subscriber_lavatrice.user_chat_ids)
+
+def lavatrice_non_svuotata(message):
+    subscriber_lavatrice.user_chat_ids = subscriber_lavatrice.load_subscribers()
+    bot.send_message(message.chat.id,"E forza su")
+
+
+def domanda_lavatrice(chat_id):
+    bot.send_message(chat_id,"Hai scaricato la lavatrice?",reply_markup=gen_lavatrice_svuotata_markup())
+
 
 #================================================================================================================================================
 #-------------------------------------------LOOP-------------------------------------------------------------------------------------------------
@@ -192,21 +237,60 @@ def scheduler_loop():
         schedule.run_pending()
         time.sleep(1)
 
+#================================================================================================================================================
+#-------------------------------------------A CASO-----------------------------------------------------------------------------------------------
+#================================================================================================================================================
+
         
 
 @bot.message_handler(commands=['classifiche'])
 def get_turni_delle_pulizie(message):
-   msg = '\U00002757 This is a Robot face!\n'
+   msg = '\U00002757 This is a !\n'
    bot.send_message(
        message.chat.id,
        msg
    )
 
-# Avviare il polling e lo scheduler
-if __name__ == "__main__":
+#================================================================================================================================================
+#-------------------------------------------CALLBACK QUERY HANDLER-------------------------------------------------------------------------------
+#================================================================================================================================================
+
+
+   
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    bot.edit_message_reply_markup(call.message.chat.id,call.message.message_id,None)
+    if "svuota lista della spesa si " in call.data :
+        funzioni.empty_list(MEALIE_HOSTNAME, MEALIE_PORT,call.data.replace("svuota lista della spesa si ",""))
+        bot.send_message(call.message.chat.id, "Lista svuotata")
+    elif call.data == "svuota lista della spesa no":
+        bot.send_message(call.message.chat.id, "Ok, non faccio nulla")
+    elif "lista da visualizzare " in call.data :
+        get_lista_della_spesa(call.message.chat.id, call.data.replace("lista da visualizzare : ",""))
+    elif "lista da svuotare " in call.data :
+        empty_lista_della_spesa_question(call.message, call.data.replace("lista da svuotare : ",""))
+    elif "lavatrice svuotata" in call.data :
+        lavatrice_svuotata(call.message)
+    elif "lavatrice non svuotata" in call.data :
+        lavatrice_non_svuotata(call.message)
+    elif "lavatrice rompimi il cazzo" in call.data :
+        schedule.every(5).seconds.do(domanda_lavatrice,chat_id=call.message.chat.id).tag("lavatrice",call.message.chat.id)
+
+        
+
+#================================================================================================================================================
+#-------------------------------------------RUN--------------------------------------------------------------------------------------------------
+#================================================================================================================================================
+
+
+def scheduler_initialize():
     # Programmare il messaggio ogni sabato alle 9
     schedule.every().saturday.at("09:00").do(send_scheduled_turni)
     # Avvia lo scheduler in un thread separato
     Thread(target=scheduler_loop).start()
+
+# Avviare il polling e lo scheduler
+if __name__ == "__main__":
+    scheduler_initialize()
     # Avvia il polling del bot
     bot.infinity_polling()

@@ -24,8 +24,12 @@ services:
       - HOME_ASSISTANT_TOKEN=${HOME_ASSISTANT_TOKEN:-placeholder}
       - ID_LAVATRICE=${ID_LAVATRICE:-placeholder}
 
+      - FLASK_APP=app.py
+      - FLASK_DEBUG=${FLASK_DEBUG:-True}
+      - FLASK_HOST=${FLASK_HOST:-0.0.0.0}
+      - FLASK_PORT=${FLASK_PORT:-5000}
     ports:
-      - "8759:${SERVICE_PORT}"
+      - "8759:${FLASK_PORT}"
     restart: unless-stopped
     build: .
     pull_policy: build
