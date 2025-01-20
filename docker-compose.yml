@@ -24,6 +24,8 @@ services:
       - HOME_ASSISTANT_TOKEN=${HOME_ASSISTANT_TOKEN:-placeholder}
       - ID_LAVATRICE=${ID_LAVATRICE:-placeholder}
 
+      - SUBSCRIBERS_LAVATRICE_FILE=${SUBSCRIBERS_LAVATRICE_FILE}
+
       - FLASK_APP=app.py
       - FLASK_DEBUG=${FLASK_DEBUG:-True}
       - FLASK_HOST=${FLASK_HOST:-0.0.0.0}
