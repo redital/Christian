@@ -23,4 +23,4 @@ EXPOSE ${SERVICE_PORT}
 RUN chmod +x run.sh
 
 # Comando per eseguire lo script di avvio
-CMD ["run.sh"]
+CMD ["bash", "run.sh"]
