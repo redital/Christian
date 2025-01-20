@@ -5,9 +5,7 @@ import json
 def load_subscribers():
     try:
         with open(SUBSCRIBERS_LAVATRICE_FILE, "r") as file:
-            print(SUBSCRIBERS_LAVATRICE_FILE)
             content = json.load(file)
-            print(content)
             return content
     except FileNotFoundError:
         return []

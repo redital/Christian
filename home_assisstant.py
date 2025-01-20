@@ -31,7 +31,6 @@ def get_stato_lavatrice(url = ha_url, HOME_ASSISTANT_TOKEN = HOME_ASSISTANT_TOKE
     
 def get_stato_dispositivo(id_dispositivo, url = ha_url, HOME_ASSISTANT_TOKEN = HOME_ASSISTANT_TOKEN):
     response = requests.get("{}{}states/{}".format(url,base_url,id_dispositivo), headers=get_headers(HOME_ASSISTANT_TOKEN))
-    print(response.request.url)
     return response.json()
     
 def get_eventi(url = ha_url, HOME_ASSISTANT_TOKEN = HOME_ASSISTANT_TOKEN):
