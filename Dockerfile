@@ -20,7 +20,7 @@ EXPOSE ${SERVICE_PORT}
 #CMD ["python", "main.py"]
 
 # Rendi eseguibile lo script
-RUN chmod +x /path/to/start.sh
+RUN chmod +x run.sh
 
 # Comando per eseguire lo script di avvio
 CMD ["run.sh"]
