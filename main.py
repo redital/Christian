@@ -118,10 +118,10 @@ def send_scheduled_turni():
    
 def gen_empty_list_markup(nome_lista):
     markup = InlineKeyboardMarkup()
-    markup.row_width = 2
+    markup.row_width = 1
     markup.add(
-        InlineKeyboardButton("Sì", callback_data="svuota lista della spesa si " + nome_lista),
-        InlineKeyboardButton("No", callback_data="svuota lista della spesa no")
+        InlineKeyboardButton("Svuota la lista", callback_data="svuota lista della spesa si " + nome_lista),
+        InlineKeyboardButton("Non svuotare la lista", callback_data="svuota lista della spesa no")
         )
     return markup
 
@@ -153,13 +153,13 @@ def selezione_get_lista_della_spesa(message):
     bot.send_message(message.chat.id,"Quale lista vuoi vedere?",reply_markup=gen_get_list_selection_markup(list_list))
 def get_lista_della_spesa(chat_id,nome_lista):
     msg = funzioni.genera_messaggio_lista_della_spesa(MEALIE_HOSTNAME, MEALIE_PORT,nome_lista)
-    bot.send_message(chat_id,msg)
-    schedule.every().hour.do(domanda_empty_list,chat_id=chat_id,nome_lista = nome_lista)
+    bot.send_message(chat_id,msg,reply_markup=gen_empty_list_markup(nome_lista))
+    schedule.every().hour.do(domanda_empty_list,chat_id=chat_id,nome_lista = nome_lista).tag("lista_della_spesa" + str(chat_id) + nome_lista)
 
 @bot.message_handler(commands=['svuota_lista_della_spesa'])
 def selezione_empty_lista_della_spesa(message):
     list_list = funzioni.get_liste_della_spesa(MEALIE_HOSTNAME,MEALIE_PORT)
-    bot.send_message(message.chat.id,"Quale lista vuoi svuotare?",reply_markup=gen_empty_list_selection_markup(list_list))
+    bot.send_message(message.chat.id, "Quale lista vuoi svuotare?", reply_markup=gen_empty_list_selection_markup(list_list))
 def empty_lista_della_spesa_question(message,nome_lista):
     bot.send_message(message.chat.id, "Vuoi che svuoti la lista della spesa?", reply_markup=gen_empty_list_markup(nome_lista))
 
@@ -260,7 +260,11 @@ def get_turni_delle_pulizie(message):
 def callback_query(call):
     bot.edit_message_reply_markup(call.message.chat.id,call.message.message_id,None)
     if "svuota lista della spesa si " in call.data :
-        funzioni.empty_list(MEALIE_HOSTNAME, MEALIE_PORT,call.data.replace("svuota lista della spesa si ",""))
+        nome_lista = call.data.replace("svuota lista della spesa si ","")
+        funzioni.empty_list(MEALIE_HOSTNAME, MEALIE_PORT,nome_lista)
+        print(schedule.get_jobs())
+        schedule.clear("lista_della_spesa" + str(call.message.chat.id) + nome_lista)
+        print(schedule.get_jobs())
         bot.send_message(call.message.chat.id, "Lista svuotata")
     elif call.data == "svuota lista della spesa no":
         bot.send_message(call.message.chat.id, "Ok, non faccio nulla")

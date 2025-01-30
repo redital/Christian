@@ -54,7 +54,7 @@ def get_lista_della_spesa(hostname, port, nome_lista):
     
 
 def genera_messaggio_lista_della_spesa(hostname, port, nome_lista):
-    msg = "Questa è la lista" + nome_lista + ":\n"
+    msg = "Questa è la lista " + nome_lista + ":\n"
     for i in get_lista_della_spesa(hostname, port, nome_lista):
         msg += "-" + i + "\n"
     return msg
