@@ -262,9 +262,7 @@ def callback_query(call):
     if "svuota lista della spesa si " in call.data :
         nome_lista = call.data.replace("svuota lista della spesa si ","")
         funzioni.empty_list(MEALIE_HOSTNAME, MEALIE_PORT,nome_lista)
-        print(schedule.get_jobs())
         schedule.clear("lista_della_spesa" + str(call.message.chat.id) + nome_lista)
-        print(schedule.get_jobs())
         bot.send_message(call.message.chat.id, "Lista svuotata")
     elif call.data == "svuota lista della spesa no":
         bot.send_message(call.message.chat.id, "Ok, non faccio nulla")
