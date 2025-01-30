@@ -210,25 +210,20 @@ def notifica_lavatrice_finita():
     for i in subscriber_lavatrice.user_chat_ids:
         bot.send_message(i,"Oh guarda che la lavatrice è finita")
         bot.send_message(i,"Vanno tolti presto i panni altrimenti puzzano",reply_markup=gen_rompimi_il_cazzo_markup())
-
-
-def lavatrice_svuotata(message):
-    subscriber_lavatrice.user_chat_ids = subscriber_lavatrice.load_subscribers()
-    bot.send_message(message.chat.id,"Bravo ragazzo")
-    schedule.clear("lavatrice")
-    subscriber_lavatrice.user_chat_ids.remove(message.chat.id)
-    for i in subscriber_lavatrice.user_chat_ids:
-        bot.send_message(i,"La lavatrice è stata svuotata")
     subscriber_lavatrice.user_chat_ids = []
     subscriber_lavatrice.save_subscribers(subscriber_lavatrice.user_chat_ids)
 
+
+def lavatrice_svuotata(message):
+    bot.send_message(message.chat.id,"Bravo ragazzo")
+    schedule.clear("lavatrice")
+
 def lavatrice_non_svuotata(message):
-    subscriber_lavatrice.user_chat_ids = subscriber_lavatrice.load_subscribers()
     bot.send_message(message.chat.id,"E forza su")
 
 
 def domanda_lavatrice(chat_id):
-    bot.send_message(chat_id,"Hai scaricato la lavatrice?",reply_markup=gen_lavatrice_svuotata_markup())
+    bot.send_message(chat_id,"Hai scaricato la lavatrice?", reply_markup = gen_lavatrice_svuotata_markup())
 
 
 #================================================================================================================================================
