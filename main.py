@@ -103,7 +103,7 @@ def disiscriviti(message):
 
 # Funzione per inviare il messaggio schedulato
 def send_scheduled_turni():
-    msg = funzioni.genera_messaggio_turni()
+    msg = funzioni.genera_messaggio_turni(TURNI_HOSTNAME, TURNI_PORT)
     subscribers.user_chat_ids = subscribers.load_subscribers()
     for chat_id in subscribers.user_chat_ids:
         bot.send_message(chat_id, msg)
