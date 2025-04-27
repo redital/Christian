@@ -20,8 +20,8 @@ def flask_initializer():
     Thread(target=app.run,kwargs=flask_app_config).start()
 
 if __name__ == "__main__":
-    scheduler_initialize()
-    Thread(target=bot.infinity_polling,daemon=True).start
+    #scheduler_initialize()
+    #Thread(target=bot.infinity_polling,daemon=True).start()
     app.run(**flask_app_config)
     #flask_initializer()
     # Avvia il polling del bot
