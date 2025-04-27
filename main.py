@@ -243,7 +243,7 @@ def scheduler_loop():
         
 
 @bot.message_handler(commands=['classifiche'])
-def get_turni_delle_pulizie(message):
+def placeholder(message):
    msg = '\U00002757 This is a !\n'
    bot.send_message(
        message.chat.id,
