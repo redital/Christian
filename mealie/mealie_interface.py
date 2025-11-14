@@ -10,7 +10,7 @@ def get_random_recipe_from_categories(categories, api_url=mealie_url, token=api_
     :param categories: Lista delle categorie
     :return: Una ricetta casuale
     """
-    recipes = [i["slug"] for i in get_recipes_by_categories(categories, require_all_categories=True)]
+    recipes = [i["slug"] for i in get_recipes_by_categories(categories, require_all_categories=True, api_url=api_url, token=token)]
     if recipes:
         # Scegli una ricetta casuale
         random_recipe = random.choice(recipes)
