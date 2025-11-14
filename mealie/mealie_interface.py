@@ -15,7 +15,7 @@ def get_random_recipe_from_categories(categories, api_url=mealie_url, token=api_
         # Scegli una ricetta casuale
         random_recipe = random.choice(recipes)
         print(f"Ricetta casuale: {random_recipe}")
-        return get_recipe(random_recipe)
+        return get_recipe(random_recipe, api_url=api_url, token=token)
     else:
         print("Nessuna ricetta trovata con le categorie specificate.")
         return None
