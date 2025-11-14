@@ -1,21 +1,7 @@
-import requests
-import json
-from config import * 
-
-api_token = MEALIE_TOKEN
-mealie_url = "http://{}.local:{}".format(MEALIE_HOSTNAME,MEALIE_PORT)
+from mealie.mealie_base_module import *
 base_url = "/api/groups/shopping/lists"
 
 shopping_lists = {}
-
-def get_headers(token=mealie_url):
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer {}".format(token),
-    }
-
-    return headers
-
 
 def get_shopping_list(item_id, api_url=mealie_url, token=api_token):
     headers = get_headers(token)

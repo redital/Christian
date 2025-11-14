@@ -1,5 +1,7 @@
 from requests import get
-import shopping_list
+from mealie import shopping_list
+from mealie import category
+from mealie import mealie_interface
 import socket
 import home_assisstant
 
@@ -74,3 +76,29 @@ def genera_messaggio_lavatrice(hostname, port):
     stato = home_assisstant.get_stato_lavatrice(url=ha_url)
     msg = "Ciao, sono Christian la lavatrice e il mio stato in questo momento è: {}".format(home_assisstant.stati[stato])
     return msg    
+
+
+def genera_messaggio_ricetta_casuale(categories, hostname, port):
+    mealie_url = get_service_url(hostname,port)
+    res = mealie_interface.get_random_recipe_from_categories(categories, api_url=mealie_url)
+
+    recipe_format = """
+Ricetta: {name}
+Tempo totale: {totalTime} minuti
+Ingredienti:\n{ingredients_list}
+    """.format(
+        name=res["name"],
+        totalTime=res["totalTime"],
+        ingredients_list="\n".join(
+            ["\t- {}".format(i["originalText"]) for i in res["recipeIngredient"]]
+        ),
+    )
+    return recipe_format
+
+def get_mealie_categories(hostname, port):
+    mealie_url = get_service_url(hostname,port)
+    res = category.get_all_categories(api_url=mealie_url)
+    if res:
+        return {i["slug"]:i["name"] for i in res}
+    else:
+        return {}

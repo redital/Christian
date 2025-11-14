@@ -163,6 +163,34 @@ def selezione_empty_lista_della_spesa(message):
 def empty_lista_della_spesa_question(message,nome_lista):
     bot.send_message(message.chat.id, "Vuoi che svuoti la lista della spesa?", reply_markup=gen_empty_list_markup(nome_lista))
 
+#================================================================================================================================================
+#-------------------------------------------RICETTA CASUALE--------------------------------------------------------------------------------------
+#================================================================================================================================================
+
+
+def gen_categorie_mealie_markup(categories_dict):
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    pulsanti = [InlineKeyboardButton(v, callback_data="categoria mealie {}".format(k)) for k,v in categories_dict.items()]
+    markup.add(*pulsanti)
+    return markup
+
+def gen_altra_ricetta(categoria_slug):
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    markup.add(InlineKeyboardButton("Mostramene un'altra", callback_data="un'altra ricetta {}".format(categoria_slug)))
+    return markup
+
+
+@bot.message_handler(commands=['ricetta_casuale'])
+def get_stato_lavatrice(message):
+    categories_dict = funzioni.get_mealie_categories(MEALIE_HOSTNAME, MEALIE_PORT)    
+    if not categories_dict:
+        bot.send_message(message.chat.id,"Non sono riuscito a recuperare le categorie da Mealie")
+        return
+    bot.send_message(message.chat.id,"Che tipo di ricetta vuoi che ti suggerisca?", reply_markup = gen_categorie_mealie_markup(categories_dict))
+
+    
 
 #================================================================================================================================================
 #-------------------------------------------LAVATRICE--------------------------------------------------------------------------------------------
@@ -298,6 +326,12 @@ def callback_query(call):
         subscriber_lavatrice.subscribers_dict_list[sender_index]["rompimi_il_cazzo"] = True
         subscriber_lavatrice.save_subscribers(subscriber_lavatrice.subscribers_dict_list)
         bot.send_message(call.message.chat.id,"Ok, ti romperò il cazzo fino a quando non scarichi la lavatrice")
+    elif "un'altra ricetta " in call.data or "categoria mealie " in call.data:
+        categorie = [call.data.replace("un'altra ricetta ","").replace("categoria mealie ","")]
+        if "categoria mealie " in call.data:
+            bot.send_message(call.message.chat.id, "Ah una ricetta di tipo {}, vediamo un po'...".format(categorie[0]))
+        msg = funzioni.genera_messaggio_ricetta_casuale(categorie, MEALIE_HOSTNAME, MEALIE_PORT)
+        bot.send_message(call.message.chat.id, msg, reply_markup=gen_altra_ricetta(categorie[0]))
 
         
 
