@@ -196,22 +196,26 @@ def ricordami_di_scaricare_la_lavatrice(message):
     if funzioni.get_stato_lavatrice(HOME_ASSISTANT_HOSTNAME, HOME_ASSISTANT_PORT) == "0":
         bot.send_message(message.chat.id,"Vedi che la lavatrice non è in funzione")
         return
-    subscriber_lavatrice.user_chat_ids = subscriber_lavatrice.load_subscribers()
+    subscriber_lavatrice.user_chat_ids = subscriber_lavatrice.load_subscribers_id_list()
     if message.chat.id in subscriber_lavatrice.user_chat_ids:
         bot.send_message(message.chat.id,"Sei già iscritto a questa notifica")
     else:
-        subscriber_lavatrice.user_chat_ids.append(message.chat.id)
-        subscriber_lavatrice.save_subscribers(subscriber_lavatrice.user_chat_ids)
-        bot.send_message(message.chat.id,"Va bene, ti ricorderò di scaricare la lavatrice")
+        subscriber_lavatrice.subscribers_dict_list.append({"chat_id":message.chat.id,"rompimi_il_cazzo":False})
+        subscriber_lavatrice.save_subscribers(subscriber_lavatrice.subscribers_dict_list)
+        bot.send_message(message.chat.id,"Va bene, ti ricorderò di scaricare la lavatrice",reply_markup=gen_rompimi_il_cazzo_markup())
 
 
 def notifica_lavatrice_finita():
-    subscriber_lavatrice.user_chat_ids = subscriber_lavatrice.load_subscribers()
+    subscriber_lavatrice.subscribers_dict_list = subscriber_lavatrice.load_subscribers()
+    subscriber_lavatrice.user_chat_ids = subscriber_lavatrice.load_subscribers_id_list()
     for i in subscriber_lavatrice.user_chat_ids:
         bot.send_message(i,"Oh guarda che la lavatrice è finita")
-        bot.send_message(i,"Vanno tolti presto i panni altrimenti puzzano",reply_markup=gen_rompimi_il_cazzo_markup())
+        bot.send_message(i,"Vanno tolti presto i panni altrimenti puzzano")
+        if subscriber_lavatrice.subscribers_dict_list[subscriber_lavatrice.find_subscriber_index(i)].get("rompimi_il_cazzo",False):
+            schedule.every(5).minutes.do(domanda_lavatrice,chat_id=i).tag("lavatrice",i)
+    subscriber_lavatrice.subscribers_dict_list = []
     subscriber_lavatrice.user_chat_ids = []
-    subscriber_lavatrice.save_subscribers(subscriber_lavatrice.user_chat_ids)
+    subscriber_lavatrice.save_subscribers(subscriber_lavatrice.subscribers_dict_list)
 
 
 def lavatrice_svuotata(message):
@@ -224,6 +228,13 @@ def lavatrice_non_svuotata(message):
 
 def domanda_lavatrice(chat_id):
     bot.send_message(chat_id,"Hai scaricato la lavatrice?", reply_markup = gen_lavatrice_svuotata_markup())
+
+    
+@bot.message_handler(commands=['mock_lavatrice_finita'])
+def mock_lavatrice_finita(message):
+    notifica_lavatrice_finita()
+    bot.send_message(message.chat.id,"mock lavatrice finita eseguito")
+
 
 
 #================================================================================================================================================
@@ -283,7 +294,10 @@ def callback_query(call):
     elif "lavatrice non svuotata" in call.data :
         lavatrice_non_svuotata(call.message)
     elif "lavatrice rompimi il cazzo" in call.data :
-        schedule.every(15).minutes.do(domanda_lavatrice,chat_id=call.message.chat.id).tag("lavatrice",call.message.chat.id)
+        sender_index = subscriber_lavatrice.find_subscriber_index(call.message.chat.id)
+        subscriber_lavatrice.subscribers_dict_list[sender_index]["rompimi_il_cazzo"] = True
+        subscriber_lavatrice.save_subscribers(subscriber_lavatrice.subscribers_dict_list)
+        bot.send_message(call.message.chat.id,"Ok, ti romperò il cazzo fino a quando non scarichi la lavatrice")
 
         
 
