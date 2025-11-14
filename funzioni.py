@@ -1,6 +1,7 @@
 from requests import get
 from mealie import shopping_list
 from mealie import category
+from mealie import mealplans
 from mealie import mealie_interface
 import socket
 import home_assisstant
@@ -102,3 +103,25 @@ def get_mealie_categories(hostname, port):
         return {i["slug"]:i["name"] for i in res}
     else:
         return {}
+    
+
+def genera_messaggio_piano_alimentare(hostname, port):
+    mealie_url = get_service_url(hostname,port)
+    res = mealplans.get_today_plan(api_url=mealie_url)
+
+    plan_parser = lambda meal_list: "\n".join(["\t- {}".format(i["recipe"]["name"] if i["recipe"] else "{} ({})".format(i["title"],i["text"])) for i in meal_list])
+
+    pranzo = [i for i in res if i["entryType"] == "lunch"]
+    menu_pranzo = plan_parser(pranzo)
+
+    cena = [i for i in res if i["entryType"] == "dinner"]
+    menu_cena = plan_parser(cena)
+
+    format_text = """
+Il menù di oggi prevede:
+- Pranzo: 
+{}
+- Cena: 
+{}
+    """
+    return format_text.format(menu_pranzo, menu_cena)
