@@ -355,7 +355,7 @@ def callback_query(call):
 
 def scheduler_initialize():
     # Programmare il messaggio ogni sabato alle 9
-    schedule.every().saturday.at("09:00").do(send_scheduled_turni)
+    schedule.every().monday.at("09:00").do(send_scheduled_turni)
     # Avvia lo scheduler in un thread separato
     Thread(target=scheduler_loop).start()
 
